@@ -96,16 +96,16 @@ func (a *Adaptor) DoRequest(c *gin.Context, meta *meta.Meta, requestBody io.Read
 	return adaptor.DoRequestHelper(a, c, meta, requestBody)
 }
 
-func (a *Adaptor) DoResponseV4(c *gin.Context, resp *http.Response, meta *meta.Meta) (usage *model.Usage, err *model.ErrorWithStatusCode) {
+func (a *Adaptor) DoResponseV4(c *gin.Context, resp *http.Response, meta *meta.Meta) (usage *model.Usage, err *model.ErrorWithStatusCode, id string) {
 	if meta.IsStream {
-		err, _, usage = openai.StreamHandler(c, resp, meta.Mode)
+		err, _, usage, id = openai.StreamHandler(c, resp, meta.Mode)
 	} else {
 		err, usage = openai.Handler(c, resp, meta.PromptTokens, meta.ActualModelName)
 	}
 	return
 }
 
-func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, meta *meta.Meta) (usage *model.Usage, err *model.ErrorWithStatusCode) {
+func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, meta *meta.Meta) (usage *model.Usage, err *model.ErrorWithStatusCode, id string) {
 	switch meta.Mode {
 	case relaymode.Embeddings:
 		err, usage = EmbeddingsHandler(c, resp)

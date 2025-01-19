@@ -64,7 +64,7 @@ func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
 	}
 
 	// do request
-	resp, err := adaptor.DoRequest(c, meta, requestBody)
+	resp, err:= adaptor.DoRequest(c, meta, requestBody)
 	if err != nil {
 		logger.Errorf(ctx, "DoRequest failed: %s", err.Error())
 		return openai.ErrorWrapper(err, "do_request_failed", http.StatusInternalServerError)
@@ -75,14 +75,14 @@ func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
 	}
 
 	// do response
-	usage, respErr := adaptor.DoResponse(c, resp, meta)
+	usage, respErr, id := adaptor.DoResponse(c, resp, meta)
 	if respErr != nil {
 		logger.Errorf(ctx, "respErr is not nil: %+v", respErr)
 		billing.ReturnPreConsumedQuota(ctx, preConsumedQuota, meta.TokenId)
 		return respErr
 	}
 	// post-consume quota
-	go postConsumeQuota(ctx, usage, meta, textRequest, ratio, preConsumedQuota, modelRatio, groupRatio, systemPromptReset)
+	go postConsumeQuota(ctx, usage, meta, textRequest, ratio, preConsumedQuota, modelRatio, groupRatio, systemPromptReset, id)
 	return nil
 }
 

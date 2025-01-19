@@ -24,11 +24,12 @@ const (
 	dataPrefixLength = len(dataPrefix)
 )
 
-func StreamHandler(c *gin.Context, resp *http.Response, relayMode int) (*model.ErrorWithStatusCode, string, *model.Usage) {
+func StreamHandler(c *gin.Context, resp *http.Response, relayMode int) (*model.ErrorWithStatusCode, string, *model.Usage, string) {
 	responseText := ""
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Split(bufio.ScanLines)
 	var usage *model.Usage
+	id := ""
 
 	common.SetEventStreamHeaders(c)
 
@@ -66,6 +67,9 @@ func StreamHandler(c *gin.Context, resp *http.Response, relayMode int) (*model.E
 			if streamResponse.Usage != nil {
 				usage = streamResponse.Usage
 			}
+			if streamResponse.Id != "" {
+				id = streamResponse.Id
+			}
 		case relaymode.Completions:
 			render.StringData(c, data)
 			var streamResponse CompletionsStreamResponse
@@ -90,10 +94,10 @@ func StreamHandler(c *gin.Context, resp *http.Response, relayMode int) (*model.E
 
 	err := resp.Body.Close()
 	if err != nil {
-		return ErrorWrapper(err, "close_response_body_failed", http.StatusInternalServerError), "", nil
+		return ErrorWrapper(err, "close_response_body_failed", http.StatusInternalServerError), "", nil, ""
 	}
 
-	return nil, responseText, usage
+	return nil, responseText, usage, id
 }
 
 func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName string) (*model.ErrorWithStatusCode, *model.Usage) {

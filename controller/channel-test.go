@@ -101,7 +101,7 @@ func testChannel(channel *model.Channel, request *relaymodel.GeneralOpenAIReques
 		err := controller.RelayErrorHandler(resp)
 		return fmt.Errorf("status code %d: %s", resp.StatusCode, err.Error.Message), &err.Error
 	}
-	usage, respErr := adaptor.DoResponse(c, resp, meta)
+	usage, respErr, _ := adaptor.DoResponse(c, resp, meta)
 	if respErr != nil {
 		return fmt.Errorf("%s", respErr.Error.Message), &respErr.Error
 	}

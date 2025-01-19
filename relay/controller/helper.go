@@ -2,15 +2,20 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/songquanpeng/one-api/relay/constant/role"
+	"io"
 	"math"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/songquanpeng/one-api/relay/constant/role"
 
 	"github.com/gin-gonic/gin"
 	"github.com/songquanpeng/one-api/common"
+	"github.com/songquanpeng/one-api/common/client"
 	"github.com/songquanpeng/one-api/common/config"
 	"github.com/songquanpeng/one-api/common/logger"
 	"github.com/songquanpeng/one-api/model"
@@ -91,10 +96,26 @@ func preConsumeQuota(ctx context.Context, textRequest *relaymodel.GeneralOpenAIR
 	return preConsumedQuota, nil
 }
 
-func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.Meta, textRequest *relaymodel.GeneralOpenAIRequest, ratio float64, preConsumedQuota int64, modelRatio float64, groupRatio float64, systemPromptReset bool) {
+func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.Meta, textRequest *relaymodel.GeneralOpenAIRequest, ratio float64, preConsumedQuota int64, modelRatio float64, groupRatio float64, systemPromptReset bool, id string) {
 	if usage == nil {
 		logger.Error(ctx, "usage is nil, which is unexpected")
 		return
+	}
+	var realCost float64
+	if meta.ChannelType == channeltype.OpenRouter {
+		time.Sleep(1 * time.Second)
+		req, _ := http.NewRequest("GET", "https://openrouter.ai/api/v1/generation?id="+id, nil)
+		req.Header.Set("Authorization", "Bearer "+meta.APIKey)
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := client.HTTPClient.Do(req)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error(ctx, "error consuming token remain quota3: "+err.Error())
+		}
+		var response map[string]interface{}
+		json.Unmarshal(body, &response)
+		data := response["data"]
+		realCost = data.(map[string]interface{})["total_cost"].(float64)
 	}
 	var quota int64
 	completionRatio := billingratio.GetCompletionRatio(textRequest.Model, meta.ChannelType)
@@ -124,7 +145,7 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 		extraLog = " （注意系统提示词已被重置）"
 	}
 	logContent := fmt.Sprintf("模型倍率 %.2f，分组倍率 %.2f，补全倍率 %.2f%s", modelRatio, groupRatio, completionRatio, extraLog)
-	model.RecordConsumeLog(ctx, meta.UserId, meta.ChannelId, promptTokens, completionTokens, textRequest.Model, meta.TokenName, quota, logContent)
+	model.RecordConsumeLog(ctx, meta.UserId, meta.ChannelId, promptTokens, completionTokens, textRequest.Model, meta.TokenName, quota, logContent, realCost)
 	model.UpdateUserUsedQuotaAndRequestCount(meta.UserId, quota)
 	model.UpdateChannelUsedQuota(meta.ChannelId, quota)
 }
