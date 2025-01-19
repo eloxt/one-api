@@ -11,8 +11,12 @@ import (
 
 func GetAllLogs(c *gin.Context) {
 	p, _ := strconv.Atoi(c.Query("p"))
-	if p < 0 {
-		p = 0
+	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+	if p < 1 {
+		p = 1
+	}
+	if pageSize < 0 {
+		pageSize = 10
 	}
 	logType, _ := strconv.Atoi(c.Query("type"))
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
@@ -21,7 +25,7 @@ func GetAllLogs(c *gin.Context) {
 	tokenName := c.Query("token_name")
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
-	logs, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, p*config.ItemsPerPage, config.ItemsPerPage, channel)
+	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, (p-1)*pageSize, pageSize, channel)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -32,9 +36,13 @@ func GetAllLogs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
-		"data":    logs,
+		"data": map[string]any{
+			"items":     logs,
+			"total":     total,
+			"page":      p,
+			"pageSize": pageSize,
+		},
 	})
-	return
 }
 
 func GetUserLogs(c *gin.Context) {
