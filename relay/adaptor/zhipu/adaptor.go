@@ -3,16 +3,17 @@ package zhipu
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/helper"
-	"github.com/songquanpeng/one-api/relay/adaptor"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/meta"
-	"github.com/songquanpeng/one-api/relay/model"
-	"github.com/songquanpeng/one-api/relay/relaymode"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/eloxt/one-api/common/helper"
+	"github.com/eloxt/one-api/relay/adaptor"
+	"github.com/eloxt/one-api/relay/adaptor/openai"
+	"github.com/eloxt/one-api/relay/meta"
+	"github.com/eloxt/one-api/relay/model"
+	"github.com/eloxt/one-api/relay/relaymode"
+	"github.com/gin-gonic/gin"
 )
 
 type Adaptor struct {
@@ -100,7 +101,7 @@ func (a *Adaptor) DoResponseV4(c *gin.Context, resp *http.Response, meta *meta.M
 	if meta.IsStream {
 		err, _, usage, id = openai.StreamHandler(c, resp, meta.Mode)
 	} else {
-		err, usage = openai.Handler(c, resp, meta.PromptTokens, meta.ActualModelName)
+		err, usage, id = openai.Handler(c, resp, meta.PromptTokens, meta.ActualModelName)
 	}
 	return
 }

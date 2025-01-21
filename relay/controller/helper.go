@@ -11,21 +11,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/songquanpeng/one-api/relay/constant/role"
+	"github.com/eloxt/one-api/relay/constant/role"
 
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/client"
+	"github.com/eloxt/one-api/common/config"
+	"github.com/eloxt/one-api/common/logger"
+	"github.com/eloxt/one-api/model"
+	"github.com/eloxt/one-api/relay/adaptor/openai"
+	billingratio "github.com/eloxt/one-api/relay/billing/ratio"
+	"github.com/eloxt/one-api/relay/channeltype"
+	"github.com/eloxt/one-api/relay/controller/validator"
+	"github.com/eloxt/one-api/relay/meta"
+	relaymodel "github.com/eloxt/one-api/relay/model"
+	"github.com/eloxt/one-api/relay/relaymode"
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/client"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/model"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
-	"github.com/songquanpeng/one-api/relay/channeltype"
-	"github.com/songquanpeng/one-api/relay/controller/validator"
-	"github.com/songquanpeng/one-api/relay/meta"
-	relaymodel "github.com/songquanpeng/one-api/relay/model"
-	"github.com/songquanpeng/one-api/relay/relaymode"
 )
 
 func getAndValidateTextRequest(c *gin.Context, relayMode int) (*relaymodel.GeneralOpenAIRequest, error) {
@@ -102,14 +102,16 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 		return
 	}
 	var realCost float64
-	if meta.ChannelType == channeltype.OpenRouter {
-		realCost = getOpenRouterCost(ctx, meta, id)
-	}
 	var quota int64
 	completionRatio := billingratio.GetCompletionRatio(textRequest.Model, meta.ChannelType)
 	promptTokens := usage.PromptTokens
 	completionTokens := usage.CompletionTokens
 	quota = int64(math.Ceil((float64(promptTokens) + float64(completionTokens)*completionRatio) * ratio))
+	if meta.ChannelType == channeltype.OpenRouter {
+		realCost = getOpenRouterCost(ctx, meta, id)
+	} else {
+		realCost = float64(quota) * 2
+	}
 	if ratio != 0 && quota <= 0 {
 		quota = 1
 	}
@@ -208,6 +210,7 @@ func getOpenRouterCost(ctx context.Context, meta *meta.Meta, id string) (realCos
 			if err == nil {
 				var response map[string]interface{}
 				json.Unmarshal(body, &response)
+				logger.Info(ctx, "get real cost: "+string(body))
 				data := response["data"]
 				if data == nil {
 					break

@@ -1,12 +1,13 @@
 package meta
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/ctxkey"
-	"github.com/songquanpeng/one-api/model"
-	"github.com/songquanpeng/one-api/relay/channeltype"
-	"github.com/songquanpeng/one-api/relay/relaymode"
 	"strings"
+
+	"github.com/eloxt/one-api/common/ctxkey"
+	"github.com/eloxt/one-api/model"
+	"github.com/eloxt/one-api/relay/channeltype"
+	"github.com/eloxt/one-api/relay/relaymode"
+	"github.com/gin-gonic/gin"
 )
 
 type Meta struct {

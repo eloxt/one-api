@@ -4,21 +4,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/songquanpeng/one-api/common/config"
 	"io"
 	"net/http"
 
+	"github.com/eloxt/one-api/common/config"
+
+	"github.com/eloxt/one-api/common/logger"
+	"github.com/eloxt/one-api/relay"
+	"github.com/eloxt/one-api/relay/adaptor"
+	"github.com/eloxt/one-api/relay/adaptor/openai"
+	"github.com/eloxt/one-api/relay/apitype"
+	"github.com/eloxt/one-api/relay/billing"
+	billingratio "github.com/eloxt/one-api/relay/billing/ratio"
+	"github.com/eloxt/one-api/relay/channeltype"
+	"github.com/eloxt/one-api/relay/meta"
+	"github.com/eloxt/one-api/relay/model"
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/relay"
-	"github.com/songquanpeng/one-api/relay/adaptor"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/apitype"
-	"github.com/songquanpeng/one-api/relay/billing"
-	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
-	"github.com/songquanpeng/one-api/relay/channeltype"
-	"github.com/songquanpeng/one-api/relay/meta"
-	"github.com/songquanpeng/one-api/relay/model"
 )
 
 func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
@@ -64,7 +65,7 @@ func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
 	}
 
 	// do request
-	resp, err:= adaptor.DoRequest(c, meta, requestBody)
+	resp, err := adaptor.DoRequest(c, meta, requestBody)
 	if err != nil {
 		logger.Errorf(ctx, "DoRequest failed: %s", err.Error())
 		return openai.ErrorWrapper(err, "do_request_failed", http.StatusInternalServerError)

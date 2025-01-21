@@ -1,6 +1,6 @@
 package openai
 
-import "github.com/songquanpeng/one-api/relay/model"
+import "github.com/eloxt/one-api/relay/model"
 
 type TextContent struct {
 	Type string `json:"type,omitempty"`
@@ -77,6 +77,7 @@ type UsageOrResponseText struct {
 }
 
 type SlimTextResponse struct {
+	Id          string               `json:"id"`
 	Choices     []TextResponseChoice `json:"choices"`
 	model.Usage `json:"usage"`
 	Error       model.Error `json:"error"`

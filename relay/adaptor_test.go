@@ -1,8 +1,8 @@
 package relay
 
 import (
+	"github.com/eloxt/one-api/relay/apitype"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/songquanpeng/one-api/relay/apitype"
 	"testing"
 )
 

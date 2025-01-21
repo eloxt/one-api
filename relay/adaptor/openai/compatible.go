@@ -1,21 +1,21 @@
 package openai
 
 import (
-	"github.com/songquanpeng/one-api/relay/adaptor/ai360"
-	"github.com/songquanpeng/one-api/relay/adaptor/baichuan"
-	"github.com/songquanpeng/one-api/relay/adaptor/deepseek"
-	"github.com/songquanpeng/one-api/relay/adaptor/doubao"
-	"github.com/songquanpeng/one-api/relay/adaptor/groq"
-	"github.com/songquanpeng/one-api/relay/adaptor/lingyiwanwu"
-	"github.com/songquanpeng/one-api/relay/adaptor/minimax"
-	"github.com/songquanpeng/one-api/relay/adaptor/mistral"
-	"github.com/songquanpeng/one-api/relay/adaptor/moonshot"
-	"github.com/songquanpeng/one-api/relay/adaptor/novita"
-	"github.com/songquanpeng/one-api/relay/adaptor/siliconflow"
-	"github.com/songquanpeng/one-api/relay/adaptor/stepfun"
-	"github.com/songquanpeng/one-api/relay/adaptor/togetherai"
-	"github.com/songquanpeng/one-api/relay/adaptor/xai"
-	"github.com/songquanpeng/one-api/relay/channeltype"
+	"github.com/eloxt/one-api/relay/adaptor/ai360"
+	"github.com/eloxt/one-api/relay/adaptor/baichuan"
+	"github.com/eloxt/one-api/relay/adaptor/deepseek"
+	"github.com/eloxt/one-api/relay/adaptor/doubao"
+	"github.com/eloxt/one-api/relay/adaptor/groq"
+	"github.com/eloxt/one-api/relay/adaptor/lingyiwanwu"
+	"github.com/eloxt/one-api/relay/adaptor/minimax"
+	"github.com/eloxt/one-api/relay/adaptor/mistral"
+	"github.com/eloxt/one-api/relay/adaptor/moonshot"
+	"github.com/eloxt/one-api/relay/adaptor/novita"
+	"github.com/eloxt/one-api/relay/adaptor/siliconflow"
+	"github.com/eloxt/one-api/relay/adaptor/stepfun"
+	"github.com/eloxt/one-api/relay/adaptor/togetherai"
+	"github.com/eloxt/one-api/relay/adaptor/xai"
+	"github.com/eloxt/one-api/relay/channeltype"
 )
 
 var CompatibleChannels = []int{

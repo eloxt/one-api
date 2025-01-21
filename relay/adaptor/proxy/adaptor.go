@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/eloxt/one-api/relay/adaptor"
+	channelhelper "github.com/eloxt/one-api/relay/adaptor"
+	"github.com/eloxt/one-api/relay/meta"
+	"github.com/eloxt/one-api/relay/model"
+	relaymodel "github.com/eloxt/one-api/relay/model"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"github.com/songquanpeng/one-api/relay/adaptor"
-	channelhelper "github.com/songquanpeng/one-api/relay/adaptor"
-	"github.com/songquanpeng/one-api/relay/meta"
-	"github.com/songquanpeng/one-api/relay/model"
-	relaymodel "github.com/songquanpeng/one-api/relay/model"
 )
 
 var _ adaptor.Adaptor = new(Adaptor)
@@ -38,12 +38,12 @@ func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, meta *meta.Met
 	c.Writer.WriteHeader(resp.StatusCode)
 	if _, gerr := io.Copy(c.Writer, resp.Body); gerr != nil {
 		return nil, &relaymodel.ErrorWithStatusCode{
-			StatusCode: http.StatusInternalServerError,
-			Error: relaymodel.Error{
-				Message: gerr.Error(),
+				StatusCode: http.StatusInternalServerError,
+				Error: relaymodel.Error{
+					Message: gerr.Error(),
+				},
 			},
-		},
-		""
+			""
 	}
 
 	return nil, nil, ""

@@ -3,8 +3,9 @@ package model
 import (
 	"errors"
 	"fmt"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/helper"
+
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/helper"
 	"gorm.io/gorm"
 )
 

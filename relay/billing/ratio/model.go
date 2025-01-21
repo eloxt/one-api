@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/songquanpeng/one-api/common/logger"
+	"github.com/eloxt/one-api/common/logger"
 )
 
 const (

@@ -4,20 +4,21 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/songquanpeng/one-api/common/render"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/eloxt/one-api/common/render"
+
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/helper"
+	"github.com/eloxt/one-api/common/logger"
+	"github.com/eloxt/one-api/common/random"
+	"github.com/eloxt/one-api/relay/adaptor/openai"
+	"github.com/eloxt/one-api/relay/constant"
+	"github.com/eloxt/one-api/relay/model"
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/helper"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/common/random"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/constant"
-	"github.com/songquanpeng/one-api/relay/model"
 )
 
 // https://docs.aiproxy.io/dev/library#使用已经定制好的知识库进行对话问答

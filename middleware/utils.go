@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/helper"
-	"github.com/songquanpeng/one-api/common/logger"
 	"strings"
+
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/helper"
+	"github.com/eloxt/one-api/common/logger"
+	"github.com/gin-gonic/gin"
 )
 
 func abortWithMessage(c *gin.Context, statusCode int, message string) {

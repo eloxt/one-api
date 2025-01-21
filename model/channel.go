@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/helper"
-	"github.com/songquanpeng/one-api/common/logger"
+	"github.com/eloxt/one-api/common/config"
+	"github.com/eloxt/one-api/common/helper"
+	"github.com/eloxt/one-api/common/logger"
 	"gorm.io/gorm"
 )
 

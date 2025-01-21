@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/ctxkey"
-	"github.com/songquanpeng/one-api/model"
 	"net/http"
 	"strconv"
+
+	"github.com/eloxt/one-api/common/config"
+	"github.com/eloxt/one-api/common/ctxkey"
+	"github.com/eloxt/one-api/model"
+	"github.com/gin-gonic/gin"
 )
 
 func GetAllLogs(c *gin.Context) {
@@ -37,9 +38,9 @@ func GetAllLogs(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data": map[string]any{
-			"items":     logs,
-			"total":     total,
-			"page":      p,
+			"items":    logs,
+			"total":    total,
+			"page":     p,
 			"pageSize": pageSize,
 		},
 	})

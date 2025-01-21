@@ -3,15 +3,16 @@ package router
 import (
 	"embed"
 	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/config"
+	"github.com/eloxt/one-api/controller"
+	"github.com/eloxt/one-api/middleware"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/controller"
-	"github.com/songquanpeng/one-api/middleware"
-	"net/http"
-	"strings"
 )
 
 func SetWebRouter(router *gin.Engine, buildFS embed.FS) {

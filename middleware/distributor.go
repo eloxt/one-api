@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/ctxkey"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/model"
-	"github.com/songquanpeng/one-api/relay/channeltype"
 	"net/http"
 	"strconv"
+
+	"github.com/eloxt/one-api/common/ctxkey"
+	"github.com/eloxt/one-api/common/logger"
+	"github.com/eloxt/one-api/model"
+	"github.com/eloxt/one-api/relay/channeltype"
+	"github.com/gin-gonic/gin"
 )
 
 type ModelRequest struct {

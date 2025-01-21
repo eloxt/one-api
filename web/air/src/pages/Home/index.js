@@ -73,7 +73,7 @@ const Home = () => {
     },
     {
       key: '7',
-      name: 'deepseek-reasoner',
+      name: 'deepseek-r1',
       prompt_price: '¥4',
       output_price: '¥16',
       description: '深度求索，国内最强思考型模型，评测分数持平 o1',

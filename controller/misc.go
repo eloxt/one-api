@@ -3,12 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/message"
-	"github.com/songquanpeng/one-api/model"
 	"net/http"
 	"strings"
+
+	"github.com/eloxt/one-api/common"
+	"github.com/eloxt/one-api/common/config"
+	"github.com/eloxt/one-api/common/message"
+	"github.com/eloxt/one-api/model"
 
 	"github.com/gin-gonic/gin"
 )
