@@ -3,7 +3,7 @@ package helper
 import (
 	"fmt"
 	"github.com/eloxt/one-api/common/random"
-	"github.com/gin
+	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
 	"net"

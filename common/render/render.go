@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/eloxt/one-api/common"
-	
+	"github.com/gin-gonic/gin"
 )
 
 func StringData(c *gin.Context, str string) {
