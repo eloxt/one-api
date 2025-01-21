@@ -54,7 +54,15 @@ function renderUseTime(type) {
 
 const LogsTable = () => {
   const columns = [{
-    title: '时间', dataIndex: 'timestamp2string'
+    title: '时间',
+    dataIndex: 'created_at',
+    render: (text, record, index) => {
+      return (
+        <div>
+          {renderTimestamp(text)}
+        </div>
+      )
+    }
   }, {
     title: '渠道',
     dataIndex: 'channel',
@@ -129,6 +137,12 @@ const LogsTable = () => {
       </div> : <></>);
     }
   }, {
+    title: '实际花费', dataIndex: 'real_cost', render: (text, record, index) => {
+      return (record.type === 0 || record.type === 2 ? <div>
+        {'$' + text.toFixed(6)}
+      </div> : <></>);
+    }
+  }, {
     title: '详情', dataIndex: 'content', render: (text, record, index) => {
       return <Paragraph ellipsis={{ rows: 2, showTooltip: { type: 'popover', opts: { style: { width: 240 } } } }}
         style={{ maxWidth: 240 }}>
@@ -137,7 +151,7 @@ const LogsTable = () => {
     }
   }];
 
-  const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState({ items: [], total: 0, pageSize: 0 });
   const [showStat, setShowStat] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingStat, setLoadingStat] = useState(false);
@@ -248,35 +262,25 @@ const LogsTable = () => {
     const res = await API.get(url);
     const { success, message, data } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setLogsFormat(data);
-      } else {
-        let newLogs = [...logs];
-        newLogs.splice(startIdx * pageSize, data.length, ...data);
-        setLogsFormat(newLogs);
-      }
+      setLogs(data);
     } else {
       showError(message);
     }
     setLoading(false);
   };
 
-  const pageData = logs.slice((activePage - 1) * pageSize, activePage * pageSize);
+  const pageData = logs.items;
 
   const handlePageChange = page => {
     setActivePage(page);
-    if (page === Math.ceil(logs.length / pageSize) + 1) {
-      // In this case we have to load more data and then append them.
-      loadLogs(page - 1, pageSize).then(r => {
-      });
-    }
+    loadLogs(page, pageSize)
   };
 
   const handlePageSizeChange = async (size) => {
     localStorage.setItem('page-size', size + '');
     setPageSize(size);
     setActivePage(1);
-    loadLogs(0, size)
+    loadLogs(1, size)
       .then()
       .catch((reason) => {
         showError(reason);
@@ -286,7 +290,7 @@ const LogsTable = () => {
   const refresh = async (localLogType) => {
     // setLoading(true);
     setActivePage(1);
-    await loadLogs(0, pageSize, localLogType);
+    await loadLogs(1, pageSize, localLogType);
   };
 
   const copyText = async (text) => {
@@ -302,7 +306,7 @@ const LogsTable = () => {
     // console.log('default effect')
     const localPageSize = parseInt(localStorage.getItem('page-size')) || ITEMS_PER_PAGE;
     setPageSize(localPageSize);
-    loadLogs(0, localPageSize)
+    loadLogs(1, localPageSize)
       .then()
       .catch((reason) => {
         showError(reason);
@@ -312,7 +316,7 @@ const LogsTable = () => {
   const searchLogs = async () => {
     if (searchKeyword === '') {
       // if keyword is blank, load files instead.
-      await loadLogs(0, pageSize);
+      await loadLogs(1, pageSize);
       setActivePage(1);
       return;
     }
@@ -376,7 +380,7 @@ const LogsTable = () => {
       <Table style={{ marginTop: 5 }} columns={columns} dataSource={pageData} pagination={{
         currentPage: activePage,
         pageSize: pageSize,
-        total: logCount,
+        total: logs.total,
         pageSizeOpts: [10, 20, 50, 100],
         showSizeChanger: true,
         onPageSizeChange: (size) => {

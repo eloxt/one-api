@@ -11,7 +11,7 @@ import (
 
 func GetAllLogs(c *gin.Context) {
 	p, _ := strconv.Atoi(c.Query("p"))
-	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	if p < 1 {
 		p = 1
 	}

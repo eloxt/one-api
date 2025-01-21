@@ -51,12 +51,16 @@ const LogsTable = () => {
   const [logType, setLogType] = useState(0);
   const isAdminUser = isAdmin();
   let now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  yesterday.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(now.getTime() + (24 * 60 * 60 * 1000 - now.getTimezoneOffset() * 60 * 1000));
+  endOfDay.setHours(23, 59, 59, 999);
   const [inputs, setInputs] = useState({
     username: '',
     token_name: '',
     model_name: '',
-    start_timestamp: timestamp2string(0),
-    end_timestamp: timestamp2string(now.getTime() / 1000 + 3600),
+    start_timestamp: timestamp2string(yesterday.getTime() / 1000),
+    end_timestamp: timestamp2string(endOfDay.getTime() / 1000),
     channel: ''
   });
   const { username, token_name, model_name, start_timestamp, end_timestamp, channel } = inputs;
@@ -110,7 +114,7 @@ const LogsTable = () => {
     let localStartTimestamp = Date.parse(start_timestamp) / 1000;
     let localEndTimestamp = Date.parse(end_timestamp) / 1000;
     if (isAdminUser) {
-      url = `/api/log/?pageSize=10&p=${startIdx}&type=${logType}&username=${username}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}&channel=${channel}`;
+      url = `/api/log/?page_size=10&p=${startIdx}&type=${logType}&username=${username}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}&channel=${channel}`;
     } else {
       url = `/api/log/self/?p=${startIdx}&type=${logType}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`;
     }
@@ -164,28 +168,6 @@ const LogsTable = () => {
     setSearchKeyword(value.trim());
   };
 
-  const sortLog = (key) => {
-    // if (logs.length === 0) return;
-    // setLoading(true);
-    // let sortedLogs = [...logs];
-    // if (typeof sortedLogs[0][key] === 'string') {
-    //   sortedLogs.sort((a, b) => {
-    //     return ('' + a[key]).localeCompare(b[key]);
-    //   });
-    // } else {
-    //   sortedLogs.sort((a, b) => {
-    //     if (a[key] === b[key]) return 0;
-    //     if (a[key] > b[key]) return -1;
-    //     if (a[key] < b[key]) return 1;
-    //   });
-    // }
-    // if (sortedLogs[0].id === logs[0].id) {
-    //   sortedLogs.reverse();
-    // }
-    // setLogs(sortedLogs);
-    // setLoading(false);
-  };
-
   return (
     <>
       <Segment>
@@ -229,9 +211,6 @@ const LogsTable = () => {
             <Table.Row>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('created_time');
-                }}
                 width={3}
               >
                 时间
@@ -239,9 +218,6 @@ const LogsTable = () => {
               {
                 isAdminUser && <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('channel');
-                  }}
                   width={1}
                 >
                   渠道
@@ -250,9 +226,6 @@ const LogsTable = () => {
               {
                 isAdminUser && <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('username');
-                  }}
                   width={1}
                 >
                   用户
@@ -260,72 +233,48 @@ const LogsTable = () => {
               }
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('token_name');
-                }}
                 width={1}
               >
                 令牌
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('type');
-                }}
                 width={1}
               >
                 类型
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('model_name');
-                }}
                 width={2}
               >
                 模型
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('prompt_tokens');
-                }}
                 width={1}
               >
                 提示
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('completion_tokens');
-                }}
                 width={1}
               >
                 补全
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('quota');
-                }}
                 width={1}
               >
                 额度
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('real_cost');
-                }}
                 width={1}
               >
                 实际花费
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('content');
-                }}
                 width={isAdminUser ? 4 : 6}
               >
                 详情

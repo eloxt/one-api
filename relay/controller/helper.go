@@ -108,14 +108,19 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 		req.Header.Set("Authorization", "Bearer "+meta.APIKey)
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := client.HTTPClient.Do(req)
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			logger.Error(ctx, "error consuming token remain quota3: "+err.Error())
+		if err == nil {
+			body, err := io.ReadAll(resp.Body)
+			if err == nil {
+				var response map[string]interface{}
+				json.Unmarshal(body, &response)
+				data := response["data"]
+				realCost = data.(map[string]interface{})["total_cost"].(float64)
+			} else {
+				logger.Error(ctx, "error parsing real cost: "+err.Error())
+			}
+		} else {
+			logger.Error(ctx, "error getting real cost: "+err.Error())
 		}
-		var response map[string]interface{}
-		json.Unmarshal(body, &response)
-		data := response["data"]
-		realCost = data.(map[string]interface{})["total_cost"].(float64)
 	}
 	var quota int64
 	completionRatio := billingratio.GetCompletionRatio(textRequest.Model, meta.ChannelType)
