@@ -70,6 +70,7 @@ func InitOptionMap() {
 	config.OptionMap["PreConsumedQuota"] = strconv.FormatInt(config.PreConsumedQuota, 10)
 	config.OptionMap["ModelRatio"] = billingratio.ModelRatio2JSONString()
 	config.OptionMap["GroupRatio"] = billingratio.GroupRatio2JSONString()
+	config.OptionMap["CacheRatio"] = billingratio.CacheRatio2JSONString()
 	config.OptionMap["CompletionRatio"] = billingratio.CompletionRatio2JSONString()
 	config.OptionMap["TopUpLink"] = config.TopUpLink
 	config.OptionMap["ChatLink"] = config.ChatLink
@@ -85,6 +86,9 @@ func loadOptionsFromDatabase() {
 	for _, option := range options {
 		if option.Key == "ModelRatio" {
 			option.Value = billingratio.AddNewMissingRatio(option.Value)
+		}
+		if option.Key == "CacheRatio" {
+			option.Value = billingratio.AddNewMissingCacheRatio(option.Value)
 		}
 		err := updateOptionMap(option.Key, option.Value)
 		if err != nil {
@@ -230,6 +234,8 @@ func updateOptionMap(key string, value string) (err error) {
 		err = billingratio.UpdateGroupRatioByJSONString(value)
 	case "CompletionRatio":
 		err = billingratio.UpdateCompletionRatioByJSONString(value)
+	case "CacheRatio":
+		err = billingratio.UpdateCacheRatioByJSONString(value)
 	case "TopUpLink":
 		config.TopUpLink = value
 	case "ChatLink":

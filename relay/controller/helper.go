@@ -104,13 +104,18 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 	var realCost float64
 	var quota int64
 	completionRatio := billingratio.GetCompletionRatio(textRequest.Model, meta.ChannelType)
+	cacheRatio := billingratio.GetCacheRatio(textRequest.Model, meta.ChannelType)
 	promptTokens := usage.PromptTokens
 	completionTokens := usage.CompletionTokens
 	quota = int64(math.Ceil((float64(promptTokens) + float64(completionTokens)*completionRatio) * ratio))
+	if usage.PromptTokensDetails.CachedTokens > 0 {
+		missToken := promptTokens - usage.PromptTokensDetails.CachedTokens
+		quota = int64(math.Ceil((float64(missToken) + float64(usage.PromptTokensDetails.CachedTokens)*cacheRatio + float64(completionTokens)*completionRatio) * ratio))
+	}
 	if meta.ChannelType == channeltype.OpenRouter {
 		realCost = getOpenRouterCost(ctx, meta, id)
 	} else {
-		realCost = float64(quota) * 2
+		realCost = float64(quota) * config.QuotaPerUnit
 	}
 	if ratio != 0 && quota <= 0 {
 		quota = 1
@@ -200,7 +205,7 @@ func setSystemPrompt(ctx context.Context, request *relaymodel.GeneralOpenAIReque
 func getOpenRouterCost(ctx context.Context, meta *meta.Meta, id string) (realCost float64) {
 	retry := 0
 	for {
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 		req, _ := http.NewRequest("GET", "https://openrouter.ai/api/v1/generation?id="+id, nil)
 		req.Header.Set("Authorization", "Bearer "+meta.APIKey)
 		req.Header.Set("Content-Type", "application/json")
@@ -212,14 +217,12 @@ func getOpenRouterCost(ctx context.Context, meta *meta.Meta, id string) (realCos
 				json.Unmarshal(body, &response)
 				logger.Info(ctx, "get real cost: "+string(body))
 				data := response["data"]
-				if data == nil {
-					break
+				if data != nil {
+					if data.(map[string]interface{})["total_cost"] != nil {
+						realCost = data.(map[string]interface{})["total_cost"].(float64)
+						return
+					}
 				}
-				if data.(map[string]interface{})["total_cost"] == nil {
-					break
-				}
-				realCost = data.(map[string]interface{})["total_cost"].(float64)
-				return
 			}
 			logger.Error(ctx, "error parsing real cost: "+err.Error())
 		} else {
