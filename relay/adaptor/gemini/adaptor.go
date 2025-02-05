@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/helper"
 	channelhelper "github.com/eloxt/one-api/relay/adaptor"
@@ -13,7 +14,6 @@ import (
 	"github.com/eloxt/one-api/relay/meta"
 	"github.com/eloxt/one-api/relay/model"
 	"github.com/eloxt/one-api/relay/relaymode"
-	"github.com/gin-gonic/gin"
 )
 
 type Adaptor struct {
@@ -24,8 +24,11 @@ func (a *Adaptor) Init(meta *meta.Meta) {
 }
 
 func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
-	defaultVersion := config.GeminiVersion
-	if meta.ActualModelName == "gemini-2.0-flash-exp" {
+	var defaultVersion string
+	switch meta.ActualModelName {
+	case "gemini-2.0-flash-exp",
+		"gemini-2.0-flash-thinking-exp",
+		"gemini-2.0-flash-thinking-exp-01-21":
 		defaultVersion = "v1beta"
 	}
 

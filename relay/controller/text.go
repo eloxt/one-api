@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/eloxt/one-api/common/config"
 	"io"
 	"net/http"
 
-	"github.com/eloxt/one-api/common/config"
+	"github.com/gin-gonic/gin"
 
+	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/logger"
 	"github.com/eloxt/one-api/relay"
 	"github.com/eloxt/one-api/relay/adaptor"
@@ -19,7 +21,6 @@ import (
 	"github.com/eloxt/one-api/relay/channeltype"
 	"github.com/eloxt/one-api/relay/meta"
 	"github.com/eloxt/one-api/relay/model"
-	"github.com/gin-gonic/gin"
 )
 
 func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {

@@ -9,12 +9,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+
 	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/logger"
 	"github.com/eloxt/one-api/controller"
 	"github.com/eloxt/one-api/model"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 )
 
 type LarkOAuthResponse struct {
@@ -80,6 +81,7 @@ func getLarkUserInfoByCode(code string) (*LarkUser, error) {
 }
 
 func LarkOAuth(c *gin.Context) {
+	ctx := c.Request.Context()
 	session := sessions.Default(c)
 	state := c.Query("state")
 	if state == "" || session.Get("oauth_state") == nil || state != session.Get("oauth_state").(string) {
@@ -126,7 +128,7 @@ func LarkOAuth(c *gin.Context) {
 			user.Role = model.RoleCommonUser
 			user.Status = model.UserStatusEnabled
 
-			if err := user.Insert(0); err != nil {
+			if err := user.Insert(ctx, 0); err != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"success": false,
 					"message": err.Error(),

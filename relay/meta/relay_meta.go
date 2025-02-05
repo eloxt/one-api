@@ -2,6 +2,7 @@ package meta
 
 import (
 	"strings"
+	"time"
 
 	"github.com/eloxt/one-api/common/ctxkey"
 	"github.com/eloxt/one-api/model"
@@ -32,6 +33,7 @@ type Meta struct {
 	RequestURLPath  string
 	PromptTokens    int // only for DoResponse
 	SystemPrompt    string
+	StartTime       time.Time
 }
 
 func GetByContext(c *gin.Context) *Meta {
@@ -49,6 +51,7 @@ func GetByContext(c *gin.Context) *Meta {
 		APIKey:          strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
 		RequestURLPath:  c.Request.URL.String(),
 		SystemPrompt:    c.GetString(ctxkey.SystemPrompt),
+		StartTime:       time.Now(),
 	}
 	cfg, ok := c.Get(ctxkey.Config)
 	if ok {

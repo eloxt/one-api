@@ -9,6 +9,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/eloxt/one-api/common"
 	"github.com/eloxt/one-api/common/ctxkey"
 	"github.com/eloxt/one-api/common/logger"
@@ -19,7 +21,6 @@ import (
 	"github.com/eloxt/one-api/relay/channeltype"
 	"github.com/eloxt/one-api/relay/meta"
 	relaymodel "github.com/eloxt/one-api/relay/model"
-	"github.com/gin-gonic/gin"
 )
 
 func getImageRequest(c *gin.Context, _ int) (*relaymodel.ImageRequest, error) {
@@ -209,8 +210,18 @@ func RelayImageHelper(c *gin.Context, relayMode int) *relaymodel.ErrorWithStatus
 		}
 		if quota != 0 {
 			tokenName := c.GetString(ctxkey.TokenName)
-			logContent := fmt.Sprintf("模型倍率 %.2f，分组倍率 %.2f", modelRatio, groupRatio)
-			model.RecordConsumeLog(ctx, meta.UserId, meta.ChannelId, 0, 0, imageRequest.Model, tokenName, quota, logContent, 0)
+			logContent := fmt.Sprintf("倍率：%.2f × %.2f", modelRatio, groupRatio)
+			model.RecordConsumeLog(ctx, &model.Log{
+				UserId:           meta.UserId,
+				ChannelId:        meta.ChannelId,
+				PromptTokens:     0,
+				CompletionTokens: 0,
+				ModelName:        imageRequest.Model,
+				TokenName:        tokenName,
+				Quota:            int(quota),
+				Content:          logContent,
+				Real
+			})
 			model.UpdateUserUsedQuotaAndRequestCount(meta.UserId, quota)
 			channelId := c.GetInt(ctxkey.ChannelId)
 			model.UpdateChannelUsedQuota(channelId, quota)

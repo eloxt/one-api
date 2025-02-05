@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"github.com/eloxt/one-api/common"
 	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/helper"
 	"github.com/eloxt/one-api/common/logger"
-	"gorm.io/gorm"
 )
 
 type Log struct {
@@ -25,6 +26,10 @@ type Log struct {
 	CompletionTokens int     `json:"completion_tokens" gorm:"default:0"`
 	ChannelId        int     `json:"channel" gorm:"index"`
 	RealCost         float64 `json:"real_cost"`
+	RequestId         string `json:"request_id" gorm:"default:''"`
+	ElapsedTime       int64  `json:"elapsed_time" gorm:"default:0"` // unit is ms
+	IsStream          bool   `json:"is_stream" gorm:"default:false"`
+	SystemPromptReset bool   `json:"system_prompt_reset" gorm:"default:false"`
 }
 
 const (
@@ -33,9 +38,21 @@ const (
 	LogTypeConsume
 	LogTypeManage
 	LogTypeSystem
+	LogTypeTest
 )
 
-func RecordLog(userId int, logType int, content string) {
+func recordLogHelper(ctx context.Context, log *Log) {
+	requestId := helper.GetRequestID(ctx)
+	log.RequestId = requestId
+	err := LOG_DB.Create(log).Error
+	if err != nil {
+		logger.Error(ctx, "failed to record log: "+err.Error())
+		return
+	}
+	logger.Infof(ctx, "record log: %+v", log)
+}
+
+func RecordLog(ctx context.Context, userId int, logType int, content string) {
 	if logType == LogTypeConsume && !config.LogConsumeEnabled {
 		return
 	}
@@ -46,13 +63,10 @@ func RecordLog(userId int, logType int, content string) {
 		Type:      logType,
 		Content:   content,
 	}
-	err := LOG_DB.Create(log).Error
-	if err != nil {
-		logger.SysError("failed to record log: " + err.Error())
-	}
+	recordLogHelper(ctx, log)
 }
 
-func RecordTopupLog(userId int, content string, quota int) {
+func RecordTopupLog(ctx context.Context, userId int, content string, quota int) {
 	log := &Log{
 		UserId:    userId,
 		Username:  GetUsernameById(userId),
@@ -61,35 +75,23 @@ func RecordTopupLog(userId int, content string, quota int) {
 		Content:   content,
 		Quota:     quota,
 	}
-	err := LOG_DB.Create(log).Error
-	if err != nil {
-		logger.SysError("failed to record log: " + err.Error())
-	}
+	recordLogHelper(ctx, log)
 }
 
-func RecordConsumeLog(ctx context.Context, userId int, channelId int, promptTokens int, completionTokens int, modelName string, tokenName string, quota int64, content string, realCost float64) {
-	logger.Info(ctx, fmt.Sprintf("record consume log: userId=%d, channelId=%d, promptTokens=%d, completionTokens=%d, modelName=%s, tokenName=%s, quota=%d, content=%s, realCost=%f", userId, channelId, promptTokens, completionTokens, modelName, tokenName, quota, content, realCost))
+func RecordConsumeLog(ctx context.Context, log *Log) {
 	if !config.LogConsumeEnabled {
 		return
 	}
-	log := &Log{
-		UserId:           userId,
-		Username:         GetUsernameById(userId),
-		CreatedAt:        helper.GetTimestamp(),
-		Type:             LogTypeConsume,
-		Content:          content,
-		PromptTokens:     promptTokens,
-		CompletionTokens: completionTokens,
-		TokenName:        tokenName,
-		ModelName:        modelName,
-		Quota:            int(quota),
-		ChannelId:        channelId,
-		RealCost:         realCost,
-	}
-	err := LOG_DB.Create(log).Error
-	if err != nil {
-		logger.Error(ctx, "failed to record log: "+err.Error())
-	}
+	log.Username = GetUsernameById(log.UserId)
+	log.CreatedAt = helper.GetTimestamp()
+	log.Type = LogTypeConsume
+	recordLogHelper(ctx, log)
+}
+
+func RecordTestLog(ctx context.Context, log *Log) {
+	log.CreatedAt = helper.GetTimestamp()
+	log.Type = LogTypeTest
+	recordLogHelper(ctx, log)
 }
 
 func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, startIdx int, num int, channel int) (logs []*Log, total int64, err error) {

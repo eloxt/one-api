@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/eloxt/one-api/common"
 	"github.com/eloxt/one-api/common/config"
-	"github.com/gin-gonic/gin"
 )
 
 var timeFormat = "2006-01-02T15:04:05.000Z"
@@ -71,7 +72,7 @@ func memoryRateLimiter(c *gin.Context, maxRequestNum int, duration int64, mark s
 }
 
 func rateLimitFactory(maxRequestNum int, duration int64, mark string) func(c *gin.Context) {
-	if maxRequestNum == 0 {
+	if maxRequestNum == 0 || config.DebugEnabled {
 		return func(c *gin.Context) {
 			c.Next()
 		}

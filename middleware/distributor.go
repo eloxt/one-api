@@ -18,6 +18,7 @@ type ModelRequest struct {
 
 func Distribute() func(c *gin.Context) {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
 		userId := c.GetInt(ctxkey.Id)
 		userGroup, _ := model.CacheGetUserGroup(userId)
 		c.Set(ctxkey.Group, userGroup)
@@ -53,6 +54,7 @@ func Distribute() func(c *gin.Context) {
 				return
 			}
 		}
+		logger.Debugf(ctx, "user id %d, user group: %s, request model: %s, using channel #%d", userId, userGroup, requestModel, channel.Id)
 		SetupContextForSelectedChannel(c, channel, requestModel)
 		c.Next()
 	}

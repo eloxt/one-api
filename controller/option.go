@@ -7,6 +7,7 @@ import (
 
 	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/helper"
+	"github.com/eloxt/one-api/common/i18n"
 	"github.com/eloxt/one-api/model"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,7 @@ func UpdateOption(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": i18n.Translate(c, "invalid_parameter"),
 		})
 		return
 	}

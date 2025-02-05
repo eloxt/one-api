@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"context"
 	"fmt"
 	"github.com/eloxt/one-api/common/random"
 	"github.com/gin-gonic/gin"
@@ -104,6 +105,18 @@ func IntMax(a int, b int) int {
 
 func GenRequestID() string {
 	return GetTimeString() + random.GetRandomNumberString(8)
+}
+
+func SetRequestID(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, RequestIdKey, id)
+}
+
+func GetRequestID(ctx context.Context) string {
+	rawRequestId := ctx.Value(RequestIdKey)
+	if rawRequestId == nil {
+		return ""
+	}
+	return rawRequestId.(string)
 }
 
 func GetResponseID(c *gin.Context) string {

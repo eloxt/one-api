@@ -12,6 +12,7 @@ import (
 	"github.com/eloxt/one-api/relay/adaptor/openai"
 	"github.com/eloxt/one-api/relay/meta"
 	"github.com/eloxt/one-api/relay/model"
+	"github.com/eloxt/one-api/relay/relaymode"
 	"github.com/gin-gonic/gin"
 )
 
@@ -53,10 +54,18 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, relayMode int, request *model.G
 	if err != nil {
 		return nil, err
 	}
-	tencentRequest := ConvertRequest(*request)
+	var convertedRequest any
+	switch relayMode {
+	case relaymode.Embeddings:
+		a.Action = "GetEmbedding"
+		convertedRequest = ConvertEmbeddingRequest(*request)
+	default:
+		a.Action = "ChatCompletions"
+		convertedRequest = ConvertRequest(*request)
+	}
 	// we have to calculate the sign here
-	a.Sign = GetSign(*tencentRequest, a, secretId, secretKey)
-	return tencentRequest, nil
+	a.Sign = GetSign(convertedRequest, a, secretId, secretKey)
+	return convertedRequest, nil
 }
 
 func (a *Adaptor) ConvertImageRequest(request *model.ImageRequest) (any, error) {
@@ -76,7 +85,12 @@ func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, meta *meta.Met
 		err, responseText = StreamHandler(c, resp)
 		usage = openai.ResponseText2Usage(responseText, meta.ActualModelName, meta.PromptTokens)
 	} else {
-		err, usage = Handler(c, resp)
+		switch meta.Mode {
+		case relaymode.Embeddings:
+			err, usage = EmbeddingHandler(c, resp)
+		default:
+			err, usage = Handler(c, resp)
+		}
 	}
 	return
 }

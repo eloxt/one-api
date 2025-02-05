@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	USD2RMB = 7
-	USD     = 500 // $0.002 = 1 -> $1 = 500
-	RMB     = USD / USD2RMB
+	USD2RMB   = 7
+	USD       = 500 // $0.002 = 1 -> $1 = 500
+	MILLI_USD = 1.0 / 1000 * USD
+	RMB       = USD / USD2RMB
 )
 
 // ModelRatio
