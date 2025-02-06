@@ -23,7 +23,7 @@ import (
 	"github.com/eloxt/one-api/common/helper"
 	"github.com/eloxt/one-api/common/logger"
 	"github.com/eloxt/one-api/common/random"
-	"github.com/eloxt/one-api/common/render"
+
 	"github.com/eloxt/one-api/relay/adaptor/openai"
 	"github.com/eloxt/one-api/relay/constant"
 	"github.com/eloxt/one-api/relay/model"

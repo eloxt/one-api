@@ -386,9 +386,6 @@ const LogsTable = () => {
           <Table.Row>
             <Table.HeaderCell
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                sortLog('created_time');
-              }}
               width={3}
             >
               {t('log.table.time')}
@@ -396,9 +393,6 @@ const LogsTable = () => {
             {isAdminUser && (
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  sortLog('channel');
-                }}
                 width={1}
               >
                 {t('log.table.channel')}
@@ -406,18 +400,12 @@ const LogsTable = () => {
             )}
             <Table.HeaderCell
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                sortLog('type');
-              }}
               width={1}
             >
               {t('log.table.type')}
             </Table.HeaderCell>
             <Table.HeaderCell
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                sortLog('model_name');
-              }}
               width={2}
             >
               {t('log.table.model')}
@@ -427,9 +415,6 @@ const LogsTable = () => {
                 {isAdminUser && (
                   <Table.HeaderCell
                     style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      sortLog('username');
-                    }}
                     width={2}
                   >
                     {t('log.table.username')}
@@ -437,36 +422,24 @@ const LogsTable = () => {
                 )}
                 <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('token_name');
-                  }}
                   width={2}
                 >
                   {t('log.table.token_name')}
                 </Table.HeaderCell>
                 <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('prompt_tokens');
-                  }}
                   width={1}
                 >
                   {t('log.table.prompt_tokens')}
                 </Table.HeaderCell>
                 <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('completion_tokens');
-                  }}
                   width={1}
                 >
                   {t('log.table.completion_tokens')}
                 </Table.HeaderCell>
                 <Table.HeaderCell
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    sortLog('quota');
-                  }}
                   width={1}
                 >
                   {t('log.table.quota')}

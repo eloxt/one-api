@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/eloxt/one-api/common/client"
 	"io"
 	"math"
 	"net/http"
@@ -116,7 +117,7 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 	if meta.ChannelType == channeltype.OpenRouter {
 		realCost = getOpenRouterCost(ctx, meta, id)
 	} else {
-		realCost = float64(quota) * config.QuotaPerUnit
+		realCost = float64(quota) / config.QuotaPerUnit
 	}
 	if ratio != 0 && quota <= 0 {
 		quota = 1
@@ -146,7 +147,7 @@ func postConsumeQuota(ctx context.Context, usage *relaymodel.Usage, meta *meta.M
 		TokenName:         meta.TokenName,
 		Quota:             int(quota),
 		Content:           logContent,
-		RealCost: 			real
+		RealCost:          realCost,
 		IsStream:          meta.IsStream,
 		ElapsedTime:       helper.CalcElapsedTime(meta.StartTime),
 		SystemPromptReset: systemPromptReset,

@@ -325,6 +325,7 @@
       "prompt_tokens": "Prompt Tokens",
       "completion_tokens": "Completion Tokens",
       "quota": "Quota",
+      "real_cost": "Real Cost",
       "detail": "Detail"
     },
     "buttons": {

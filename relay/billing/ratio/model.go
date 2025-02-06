@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/eloxt/one-api/common/logger"
+	"github.com/eloxt/one-api/relay/channeltype"
 )
 
 const (
@@ -137,6 +138,9 @@ func GetCacheRatio(name string, channelType int) float64 {
 		return ratio
 	}
 	logger.SysError("cache ratio not found: " + name)
+	if channelType == channeltype.OpenAI {
+		return 0.5
+	}
 	return 1
 }
 

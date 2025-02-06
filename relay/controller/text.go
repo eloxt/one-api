@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/eloxt/one-api/common/config"
 	"github.com/eloxt/one-api/common/logger"
 	"github.com/eloxt/one-api/relay"
 	"github.com/eloxt/one-api/relay/adaptor"

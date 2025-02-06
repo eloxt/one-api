@@ -220,7 +220,6 @@ func RelayImageHelper(c *gin.Context, relayMode int) *relaymodel.ErrorWithStatus
 				TokenName:        tokenName,
 				Quota:            int(quota),
 				Content:          logContent,
-				Real
 			})
 			model.UpdateUserUsedQuotaAndRequestCount(meta.UserId, quota)
 			channelId := c.GetInt(ctxkey.ChannelId)

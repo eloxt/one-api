@@ -324,6 +324,7 @@
       "username_placeholder": "可选值",
       "prompt_tokens": "提示词消耗",
       "completion_tokens": "补全消耗",
+      "real_cost": "实际花费",
       "quota": "额度",
       "detail": "详情"
     },
